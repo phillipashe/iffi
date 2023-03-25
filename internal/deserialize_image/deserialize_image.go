@@ -2,7 +2,8 @@ package deserialize_image
 
 import (
 	"fmt"
-	pb "iffi/proto/image"
+
+	pb "github.com/phillipashe/iffi/proto/image"
 
 	"google.golang.org/protobuf/proto"
 )

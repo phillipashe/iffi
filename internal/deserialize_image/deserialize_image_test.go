@@ -2,9 +2,10 @@ package deserialize_image
 
 import (
 	"bufio"
-	pb "iffi/proto/image"
 	"os"
 	"testing"
+
+	pb "github.com/phillipashe/iffi/proto/image"
 
 	"google.golang.org/protobuf/proto"
 )
