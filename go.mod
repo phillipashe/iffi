@@ -1,4 +1,4 @@
-module iffi
+module github.com/phillipashe/iffi
 
 go 1.19
 
