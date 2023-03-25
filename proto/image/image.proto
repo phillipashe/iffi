@@ -1,0 +1,7 @@
+syntax = "proto3";
+package main; 
+option go_package = "./proto/image";
+
+message Image {
+  string b64 = 1;
+}
