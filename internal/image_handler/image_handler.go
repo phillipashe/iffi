@@ -1,25 +1,36 @@
 package image_handler
 
 import (
+	"context"
 	"log"
 	"net"
 
+	pb "github.com/phillipashe/iffi/proto/image"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/reflection"
 )
 
-func HandleImage() string {
-	lis, err := net.Listen("tcp", ":8080")
+type server struct {
+	// Embed the unimplemented server
+	pb.DecodeImageServer
+}
+
+func (s *server) Decode(ctx context.Context, req *pb.Image) (*pb.DecodedImage, error) {
+	message := "Hello world"
+	response := &pb.DecodedImage{Decoded: message}
+	return response, nil
+}
+
+func Initialize() {
+	listener, err := net.Listen("tcp", ":50051")
 	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
+		log.Fatalf("Failed to listen: %v", err)
 	}
 
-	s := grpc.NewServer()
-	// pb.RegisterGreeterServer(s, &server{})
-	reflection.Register(s)
-	if err := s.Serve(lis); err != nil {
-		log.Fatalf("failed to serve: %v", err)
-	}
+	srv := grpc.NewServer()
+	pb.RegisterDecodeImageServer(srv, &server{})
 
-	return "placeholder"
+	log.Println("Starting gRPC server on port 50051...")
+	if err := srv.Serve(listener); err != nil {
+		log.Fatalf("Failed to serve: %v", err)
+	}
 }

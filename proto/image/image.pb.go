@@ -20,6 +20,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// Image contains a base 64 encoding of an image
 type Image struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -67,15 +68,69 @@ func (x *Image) GetB64() string {
 	return ""
 }
 
+// DecodedImage contains a decoded image
+type DecodedImage struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Decoded string `protobuf:"bytes,1,opt,name=decoded,proto3" json:"decoded,omitempty"`
+}
+
+func (x *DecodedImage) Reset() {
+	*x = DecodedImage{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_proto_image_image_proto_msgTypes[1]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *DecodedImage) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DecodedImage) ProtoMessage() {}
+
+func (x *DecodedImage) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_image_image_proto_msgTypes[1]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DecodedImage.ProtoReflect.Descriptor instead.
+func (*DecodedImage) Descriptor() ([]byte, []int) {
+	return file_proto_image_image_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *DecodedImage) GetDecoded() string {
+	if x != nil {
+		return x.Decoded
+	}
+	return ""
+}
+
 var File_proto_image_image_proto protoreflect.FileDescriptor
 
 var file_proto_image_image_proto_rawDesc = []byte{
 	0x0a, 0x17, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x69, 0x6d, 0x61, 0x67, 0x65, 0x2f, 0x69, 0x6d,
 	0x61, 0x67, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x04, 0x6d, 0x61, 0x69, 0x6e, 0x22,
 	0x19, 0x0a, 0x05, 0x49, 0x6d, 0x61, 0x67, 0x65, 0x12, 0x10, 0x0a, 0x03, 0x62, 0x36, 0x34, 0x18,
-	0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x62, 0x36, 0x34, 0x42, 0x0f, 0x5a, 0x0d, 0x2e, 0x2f,
-	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x69, 0x6d, 0x61, 0x67, 0x65, 0x62, 0x06, 0x70, 0x72, 0x6f,
-	0x74, 0x6f, 0x33,
+	0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x62, 0x36, 0x34, 0x22, 0x28, 0x0a, 0x0c, 0x44, 0x65,
+	0x63, 0x6f, 0x64, 0x65, 0x64, 0x49, 0x6d, 0x61, 0x67, 0x65, 0x12, 0x18, 0x0a, 0x07, 0x64, 0x65,
+	0x63, 0x6f, 0x64, 0x65, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x64, 0x65, 0x63,
+	0x6f, 0x64, 0x65, 0x64, 0x32, 0x3a, 0x0a, 0x0b, 0x44, 0x65, 0x63, 0x6f, 0x64, 0x65, 0x49, 0x6d,
+	0x61, 0x67, 0x65, 0x12, 0x2b, 0x0a, 0x06, 0x44, 0x65, 0x63, 0x6f, 0x64, 0x65, 0x12, 0x0b, 0x2e,
+	0x6d, 0x61, 0x69, 0x6e, 0x2e, 0x49, 0x6d, 0x61, 0x67, 0x65, 0x1a, 0x12, 0x2e, 0x6d, 0x61, 0x69,
+	0x6e, 0x2e, 0x44, 0x65, 0x63, 0x6f, 0x64, 0x65, 0x64, 0x49, 0x6d, 0x61, 0x67, 0x65, 0x22, 0x00,
+	0x42, 0x0f, 0x5a, 0x0d, 0x2e, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x69, 0x6d, 0x61, 0x67,
+	0x65, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -90,13 +145,16 @@ func file_proto_image_image_proto_rawDescGZIP() []byte {
 	return file_proto_image_image_proto_rawDescData
 }
 
-var file_proto_image_image_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
+var file_proto_image_image_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_proto_image_image_proto_goTypes = []interface{}{
-	(*Image)(nil), // 0: main.Image
+	(*Image)(nil),        // 0: main.Image
+	(*DecodedImage)(nil), // 1: main.DecodedImage
 }
 var file_proto_image_image_proto_depIdxs = []int32{
-	0, // [0:0] is the sub-list for method output_type
-	0, // [0:0] is the sub-list for method input_type
+	0, // 0: main.DecodeImage.Decode:input_type -> main.Image
+	1, // 1: main.DecodeImage.Decode:output_type -> main.DecodedImage
+	1, // [1:2] is the sub-list for method output_type
+	0, // [0:1] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name
@@ -120,6 +178,18 @@ func file_proto_image_image_proto_init() {
 				return nil
 			}
 		}
+		file_proto_image_image_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*DecodedImage); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -127,9 +197,9 @@ func file_proto_image_image_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_proto_image_image_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   1,
+			NumMessages:   2,
 			NumExtensions: 0,
-			NumServices:   0,
+			NumServices:   1,
 		},
 		GoTypes:           file_proto_image_image_proto_goTypes,
 		DependencyIndexes: file_proto_image_image_proto_depIdxs,

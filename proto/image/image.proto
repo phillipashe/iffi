@@ -2,6 +2,17 @@ syntax = "proto3";
 package main; 
 option go_package = "./proto/image";
 
+service DecodeImage {
+  // Sends a decoded image when passed an encoded image 
+  rpc Decode(Image) returns (DecodedImage) {}
+}
+
+// Image contains a base 64 encoding of an image
 message Image {
   string b64 = 1;
+}
+
+// DecodedImage contains a decoded image 
+message DecodedImage {
+  string decoded = 1;
 }

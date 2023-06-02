@@ -8,5 +8,5 @@ func HelloWorld() string {
 
 func main() {
 	HelloWorld()
-	image_handler.HandleImage()
+	image_handler.Initialize()
 }
