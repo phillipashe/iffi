@@ -1,0 +1,19 @@
+<script src="scripts.js"></script>
+<script src="protobuf.js"></script> <!-- Compiled JavaScript file from your proto files -->
+<script src="grpc-web.js"></script> <!-- grpc-web JavaScript library -->
+<!DOCTYPE html>
+<html>
+  <title>Get Image EXIF</title>
+  <body>
+    <h1>Upload Image</h1>
+    <form>
+      <input type="file" id="image" name="image" accept="image/*" onchange="handleFileSelect(event)">
+      <br>
+      <img id="preview" style="max-width: 300px; max-height: 300px;" />
+      <br>
+      <button type="button" onclick="submitProto()">Upload</button>
+    </form>
+    <p id="error-message" style="color: red;"></p>
+    <p id="success-message" style="color: green;"></p>
+  </body>
+  </html>
