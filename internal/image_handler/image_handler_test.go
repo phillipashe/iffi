@@ -1,45 +1,63 @@
 package image_handler
 
 import (
-	// "context"
+	"context"
+	"log"
+	"net"
 	"testing"
-	// "time"
-	// "google.golang.org/grpc"
+
+	pb "github.com/phillipashe/iffi/proto/image"
+	"google.golang.org/grpc"
 )
 
-func TestGetMessage(t *testing.T) {
-
-}
-func TestHandleImage(t *testing.T) {
-
-	expectedResponse := "placeholder"
-
-	res := HandleImage()
-	if res != expectedResponse {
-		t.Fatalf("Response was invalid")
+func SetupEndpoint() {
+	listener, err := net.Listen("tcp", ":50051")
+	if err != nil {
+		log.Fatalf("Failed to listen: %v", err)
 	}
 
-	// // Wait for the server to start
-	// time.Sleep(time.Second)
+	srv := grpc.NewServer()
+	pb.RegisterDecodeImageServer(srv, &server{})
 
-	// // Set up a connection to the server
-	// conn, err := grpc.Dial(":8080", grpc.WithInsecure())
-	// if err != nil {
-	// 	t.Fatalf("failed to dial server: %v", err)
-	// }
-	// defer conn.Close()
+	log.Println("Starting gRPC server on port 50051...")
+	go func() {
+		if err := srv.Serve(listener); err != nil {
+			log.Fatalf("Failed to serve: %v", err)
+		}
+	}()
+}
 
-	// // Create a client for the Greeter service
-	// client := pb.NewGreeterClient(conn)
+func TestDecode(t *testing.T) {
 
-	// // Call the Hello endpoint with a test message
-	// resp, err := client.Hello(context.Background(), &pb.HelloRequest{Name: "Alice"})
-	// if err != nil {
-	// 	t.Fatalf("failed to call Hello: %v", err)
-	// }
+	SetupEndpoint()
 
-	// // Verify the response message
-	// if resp.Message != "Hello, Alice!" {
-	// 	t.Errorf("unexpected response: %s", resp.Message)
-	// }
+	// Create a connection to the gRPC server
+	conn, err := grpc.Dial("localhost:50051", grpc.WithInsecure())
+	if err != nil {
+		t.Fatalf("Failed to dial server: %v", err)
+	}
+	defer conn.Close()
+
+	// Create a client for the gRPC service
+	client := pb.NewDecodeImageClient(conn)
+
+	// Create a context for the RPC
+	ctx := context.Background()
+
+	// Prepare the request
+	request := &pb.Image{
+		// Set image fields
+	}
+
+	// Make the RPC call
+	response, err := client.Decode(ctx, request)
+	if err != nil {
+		t.Fatalf("Failed to call Decode: %v", err)
+	}
+
+	// Verify the response
+	expectedMessage := "Hello world"
+	if response.Decoded != expectedMessage {
+		t.Errorf("Unexpected response. Expected: %s, Got: %s", expectedMessage, response.Decoded)
+	}
 }

@@ -20,7 +20,7 @@ func (s *server) Decode(ctx context.Context, req *pb.Image) (*pb.DecodedImage, e
 	return response, nil
 }
 
-func Initialize() {
+func InitializeImageHandler() {
 	listener, err := net.Listen("tcp", ":50051")
 	if err != nil {
 		log.Fatalf("Failed to listen: %v", err)
