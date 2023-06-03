@@ -22,7 +22,6 @@ func TestDeserializeImage(t *testing.T) {
 	scanner := bufio.NewScanner(iguana_file)
 	scanner.Scan()
 	iguana_b64 := scanner.Text()
-	// iguana_b64 := "abcd"
 
 	// load and serialize test image
 	iguana_img := &pb.Image{

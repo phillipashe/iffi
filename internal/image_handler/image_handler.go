@@ -5,6 +5,7 @@ import (
 	"log"
 	"net"
 
+	"github.com/phillipashe/iffi/internal/decode_image"
 	pb "github.com/phillipashe/iffi/proto/image"
 	"google.golang.org/grpc"
 )
@@ -15,8 +16,9 @@ type server struct {
 }
 
 func (s *server) Decode(ctx context.Context, req *pb.Image) (*pb.DecodedImage, error) {
-	message := "Hello world"
-	response := &pb.DecodedImage{Decoded: message}
+	// message := "Hello world"
+	gps := decode_image.GetExif(req.B64)
+	response := &pb.DecodedImage{Decoded: gps}
 	return response, nil
 }
 
