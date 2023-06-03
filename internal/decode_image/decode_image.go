@@ -2,42 +2,30 @@ package decode_image
 
 import (
 	"bytes"
-	"encoding/base64"
 	"log"
-	"strconv"
-	"strings"
 
+	pb "github.com/phillipashe/iffi/proto/image"
 	"github.com/rwcarlsen/goexif/exif"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-func ConvertToBuffer(b64 string) *bytes.Reader {
-
-	// Remove the data URI prefix
-	data := strings.TrimPrefix(b64, "data:image/png;base64,")
-
-	// Decode the Base64 string
-	decoded, err := base64.StdEncoding.DecodeString(data)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// Create a buffer from the decoded data
-	buffer := bytes.NewReader(decoded)
-
-	return buffer
-}
-
-func GetExif(b64 string) string {
-	// Open the image file
-	file := ConvertToBuffer(b64)
+func GetExif(image []byte) *pb.DecodedImage {
 
 	// Decode the EXIF data
-	x, err := exif.Decode(file)
+	x, err := exif.Decode(bytes.NewReader(image))
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	// Get latitude, longitude, and timestamp
+	// TODO: add error handling
 	lat, long, _ := x.LatLong()
+	tm, _ := x.DateTime()
 
-	return strconv.FormatFloat(lat, 'f', -1, 64) + strconv.FormatFloat(long, 'f', -1, 64)
+	// return these values inside the response proto
+	return &pb.DecodedImage{
+		Longitude: long,
+		Latitude:  lat,
+		Datetime:  timestamppb.New(tm),
+	}
 }

@@ -1,43 +1,48 @@
 package image_handler
 
 import (
-	"bufio"
 	"context"
 	"log"
+	"math"
 	"net"
 	"os"
 	"testing"
 
+	"github.com/golang/protobuf/ptypes/timestamp"
 	pb "github.com/phillipashe/iffi/proto/image"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-func MakeProto() *pb.Image {
-	iguana_file, err := os.Open("../../testing/iguana_with_exif.b64")
+// helper func to check that two floats are close enough to consider "equal"
+func FloatDifferenceWithinTolerance(f0 float64, f1 float64, tolerance float64) bool {
+	return math.Abs(f0-f1) > tolerance
+}
+
+// Create a proto to send to the gRPC endpoint
+func MakeProto(imageFileName string) *pb.Image {
+	imageData, err := os.ReadFile("../../testing/" + imageFileName)
 	if err != nil {
 		log.Fatalf("failed to retrieve iguana image from disk")
 	}
-	defer iguana_file.Close()
-
-	scanner := bufio.NewScanner(iguana_file)
-	scanner.Scan()
-	iguana_b64 := scanner.Text()
 
 	// load and serialize test image
-	iguana_img := &pb.Image{
-		B64: iguana_b64,
+	pb_img := &pb.Image{
+		ImageData: imageData,
 	}
-	return iguana_img
+	return pb_img
 }
 
+// set up the gRPC endpoint for unit testing
 func SetupEndpoint() {
 	listener, err := net.Listen("tcp", ":50051")
 	if err != nil {
 		log.Fatalf("Failed to listen: %v", err)
 	}
 
-	srv := grpc.NewServer()
+	srv := grpc.NewServer(
+		grpc.MaxRecvMsgSize(2 * int(math.Pow(10, 7))),
+	)
 	pb.RegisterDecodeImageServer(srv, &server{})
 
 	go func() {
@@ -65,7 +70,7 @@ func TestDecode(t *testing.T) {
 	ctx := context.Background()
 
 	// Prepare the request
-	request := MakeProto()
+	request := MakeProto("olympus.jpeg")
 
 	// Make the RPC call
 	response, err := client.Decode(ctx, request)
@@ -74,8 +79,16 @@ func TestDecode(t *testing.T) {
 	}
 
 	// Verify the response
-	expectedMessage := "Hello world"
-	if response.Decoded != expectedMessage {
-		t.Errorf("Unexpected response. Expected: %s, Got: %s", expectedMessage, response.Decoded)
+	expectedLatitude := 50.819053
+	expectedLongitude := -0.136792
+	expectedDatetime := &timestamp.Timestamp{Seconds: 1390507038, Nanos: 0}
+	if FloatDifferenceWithinTolerance(response.GetLatitude(), expectedLatitude, 0.001) {
+		t.Errorf("Unexpected response. Expected: %f, Got: %f", expectedLatitude, response.Latitude)
+	}
+	if FloatDifferenceWithinTolerance(response.GetLongitude(), expectedLongitude, 0.001) {
+		t.Errorf("Unexpected response. Expected: %f, Got: %f", expectedLongitude, response.Longitude)
+	}
+	if response.GetDatetime().GetSeconds() != expectedDatetime.GetSeconds() {
+		t.Errorf("Unexpected response. Expected: %s, Got: %s", expectedDatetime, response.Datetime)
 	}
 }

@@ -2,17 +2,21 @@ syntax = "proto3";
 package main; 
 option go_package = "./proto/image";
 
+import "google/protobuf/timestamp.proto";
+
 service DecodeImage {
   // Sends a decoded image when passed an encoded image 
   rpc Decode(Image) returns (DecodedImage) {}
 }
 
-// Image contains a base 64 encoding of an image
+// Image contains a []byte encoding of an image
 message Image {
-  string b64 = 1;
+  bytes image_data = 1;
 }
 
 // DecodedImage contains a decoded image 
 message DecodedImage {
-  string decoded = 1;
+  google.protobuf.Timestamp datetime = 1;
+  double latitude = 2;
+  double longitude = 3;
 }

@@ -3,6 +3,7 @@ package image_handler
 import (
 	"context"
 	"log"
+	"math"
 	"net"
 
 	"github.com/phillipashe/iffi/internal/decode_image"
@@ -16,9 +17,9 @@ type server struct {
 }
 
 func (s *server) Decode(ctx context.Context, req *pb.Image) (*pb.DecodedImage, error) {
-	// message := "Hello world"
-	gps := decode_image.GetExif(req.B64)
-	response := &pb.DecodedImage{Decoded: gps}
+	response := decode_image.GetExif(req.ImageData)
+
+	// TODO add error handling
 	return response, nil
 }
 
@@ -28,7 +29,10 @@ func InitializeImageHandler() {
 		log.Fatalf("Failed to listen: %v", err)
 	}
 
-	srv := grpc.NewServer()
+	srv := grpc.NewServer(
+		// set max received size to 20mb
+		grpc.MaxRecvMsgSize(2 * int(math.Pow(10, 7))),
+	)
 	pb.RegisterDecodeImageServer(srv, &server{})
 
 	log.Println("Starting gRPC server on port 50051...")
